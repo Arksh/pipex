@@ -1,4 +1,4 @@
-# **PIPEX** (Original perteneciente a Víctor Laínez, ligeramente modificado para mis necesidades)
+# **PIPEX** (Original perteneciente a Víctor, ligeramente modificado para mis necesidades)
 
 ## Parte obligatoria
 
