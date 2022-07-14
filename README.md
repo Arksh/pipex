@@ -199,7 +199,7 @@ En la parte bonus de multiples pipes como mínimo la entrada debe de ser de 5 ar
 
 El ejemplo más sencillo es proporcionar entradas al comando cat:
 
-	cat << TERMINAR | wc -l > tests/outfile  
+	cat << TERMINAR | wc -l > tests/outfilecmd  
 	Y nos irá poniendo "pipe heredoc> " hasta que escribamos TERMINAR  
 	pipe heredoc> Hola  
 	pipe heredoc> Esto es un  
@@ -275,7 +275,7 @@ Un error de *Invalid number of arguments*
 
 1.7 Probamos doble check vamos cambiando la palabra name varias veces y la imprimimos al final
 
-		<tests/infileOK sed 's/name/fame/g' | grep 'fame' | sed s/fame/rame/g | sed s/rame/mame/g> tests/outfileOK  
+		<tests/infileOK sed 's/name/fame/g' | grep 'fame' | sed s/fame/rame/g | sed s/rame/mame/g > tests/outfileOK  
 		./pipex tests/infileOK "sed s/name/fame/g" "grep fame" "sed s/fame/rame/g" "sed s/rame/mame/g" tests/outfileOK  
 		./pipex tests/infileOK "sed 's/name/fame/g'" "grep 'fame'" "sed 's/fame/rame/g'" "sed 's/rame/mame/g'" tests/outfileOK  
 
@@ -297,7 +297,7 @@ Un error de *Invalid number of arguments*
 ## Corrección parte bonus - here_doc
 1.1 Lo primero que probamos es qué hace un pipex por el bash, para ello escribimos en el terminal
 
-	cat << EOF | wc -l > tests/outfilecmd
+	cat << EOF | wc -l >> tests/outfilecmd
 	Y nos irá poniendo "pipe heredoc> " hasta que escribamos TERMINAR  
 	pipe heredoc> Hola
 	pipe heredoc> Esto es un
@@ -305,10 +305,10 @@ Un error de *Invalid number of arguments*
 	pipe heredoc> adiós
 	pipe heredoc> EOF
 
-	Luego probamos lo mismo con el pipex: ./pipex here_doc EOF "cat" "wc -l" tests/outfilepipex y tiene que hacer lo mismo  
+	./pipex here_doc EOF "cat" "wc -l" tests/outfilepipex
 	pipex heredoc> Hola
 	pipex heredoc> esto es un
-	pipex heredoc> heredoc
+	pipex heredoc> here document
 	pipex here_doc> adiós
 	pipex here_doc> EOF
 
@@ -316,37 +316,25 @@ El output que hayamos definido, deberá escribirse en el fichero de salida deter
 
 1.2 Ahora hacemos una de las pruebas de multiples pipes, pero en vez de coger del infile, cogerá lo que le metamos por pantalla, como siempre, primero probamos lo que hace por terminal
 
-		sed 's/name/fame/g' << EOF | grep 'fame' | sed 's/fame/rame/g' | sed 's/rame/Victor/g' > tests/outfile
+		sed 's/name/fame/g' << EOF | grep 'fame' | sed 's/fame/rame/g' | sed 's/rame/Victor/g' >> tests/outfileOK
 		./pipex here_doc EOF "sed s/name/fame/g" "grep fame" "sed s/fame/rame/g" "sed s/rame/Victor/g" tests/outfileOK
 
-1.3 Comprobamos que ocurre si lanzamos un pipex con un outfile que no tiene permisos de escritura
+1.3 Comprobamos que ocurre si lanzamos un pipex con un outfile que no tiene permisos de escritura.
 
-		sed 's/name/fame/g' << EOF | grep 'fame' | wc -l > tests/outfileNOK 
-		./pipex here_doc EOF "sed s/name/fame/g" "grep fame" "wc -l" tests/outfileNOK  
+		sed 's/name/fame/g' << EOF | grep 'fame' | wc -l > tests/outfileNOK
+		./pipex here_doc EOF "sed s/name/fame/g" "grep fame" "wc -l" tests/outfileNOK
 
-El error debería ser *permission denied* pero primero te tiene que dejar meter datos por terminal
+El error debería ser *permission denied* pero primero te tiene que dejar meter datos por terminal.
 
-1.4 Comprobamos que ocurre si lanzamos un pipex sin comandos o con menos que los permitidos en el subject
+1.4 Comprobamos que ocurre si lanzamos un pipex sin comandos o con menos que los permitidos en el subject.
 
 		./pipex here_doc EOF "sed s/name/fame/g" tests/outfileOK
 
 Un error de *Invalid number of arguments* 
 
-1.5 Comprobamos que ocurre si lanzamos un pipex con un comando que no exista
+1.5 Comprobamos que ocurre si lanzamos un pipex con un comando que no exista.
 
 		c -la << EOF | wc -l > tests/outfileOK
 		./pipex here_doc EOF "c -la" "wc -l" tests/outfileOK
 
-El error debería ser *Command not found: c* pero primero te tiene que dejar meter datos por terminal
-
-
-## Comprobamos leaks
-Con el comando leaks pipex en terminal 
-
-		c3r13s6% leaks pipex
-		You have access to multiple processes named pipex:
-			a) 85238 ./pipex
-    		b) 85239 ./pipex
-
-Te dice que proceso quieres revisar, previamente le hemos puesto un while(1) antes del exceve en el hijo y miramos los dos procesos a ver si dan leaks
-
+El error debería ser *Command not found: c* pero primero te tiene que dejar meter datos por terminal.
